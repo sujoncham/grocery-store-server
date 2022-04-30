@@ -47,8 +47,13 @@ async function run(){
             const result = await stockCollection.insertOne(newStock);
             res.send(result);
         })
-
-
+        //delete item stock
+        app.delete('/inventory/:id', async (req, res)=>{
+            const id = req.params.id;
+            const query = {_id:ObjectId(id)};
+            const result = await stockCollection.deleteOne(query);
+            res.send(result);
+        })
 
     } 
     finally{
