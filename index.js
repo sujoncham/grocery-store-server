@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -16,7 +17,7 @@ app.get('/', (req, res)=>{
 })
 
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zxfur.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -39,21 +40,45 @@ async function run(){
             const query = {_id:ObjectId(id)};
             const stock = await stockCollection.findOne(query);
             res.send(stock);
-        })
+        });
 
         // stock post 
         app.post('/inventory', async (req, res)=>{
             const newStock = req.body;
             const result = await stockCollection.insertOne(newStock);
             res.send(result);
-        })
+        });
         //delete item stock
         app.delete('/inventory/:id', async (req, res)=>{
             const id = req.params.id;
             const query = {_id:ObjectId(id)};
             const result = await stockCollection.deleteOne(query);
             res.send(result);
+        });
+
+
+        //update stock info
+        app.put('/inventory/:id', async (req, res)=>{
+            const id = req.params.id;
+            const updateStock = req.body;
+            const filterStock = {_id:ObjectId(id)};
+            const optStock = {upsert:true};
+            const stockDoc = {
+                $set: {
+                    title:updateStock.title,
+                    stock:updateStock.stock,
+                    price:updateStock.price,
+                    stock:updateStock.stock,
+                    descrip:updateStock.descrip,
+                    img:updateStock.img
+                }
+            };
+            const result = await stockCollection.updateOne(filterStock, stockDoc, optStock);
+            res.send(result);
         })
+
+
+
 
     } 
     finally{
