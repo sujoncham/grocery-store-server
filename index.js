@@ -25,6 +25,7 @@ async function run(){
     try{
         await client.connect();
         const stockCollection = client.db("stockManagement").collection("grocery");
+        const deliveredCollection = client.db("stockManagement").collection("deliver");
     
             // get data from server 
         app.get('/inventory', async (req, res)=>{
@@ -48,6 +49,7 @@ async function run(){
             const result = await stockCollection.insertOne(newStock);
             res.send(result);
         });
+
         //delete item stock
         app.delete('/inventory/:id', async (req, res)=>{
             const id = req.params.id;
@@ -55,7 +57,6 @@ async function run(){
             const result = await stockCollection.deleteOne(query);
             res.send(result);
         });
-
 
         //update stock info
         app.put('/inventory/:id', async (req, res)=>{
@@ -66,17 +67,31 @@ async function run(){
             const stockDoc = {
                 $set: {
                     title:updateStock.title,
-                    stock:updateStock.stock,
                     price:updateStock.price,
                     stock:updateStock.stock,
+                    dealer:updateStock.dealer,
+                    img:updateStock.img,
                     descrip:updateStock.descrip,
-                    img:updateStock.img
                 }
             };
             const result = await stockCollection.updateOne(filterStock, stockDoc, optStock);
             res.send(result);
-        })
+        });
 
+        // delivered collection api 
+        app.post('/deliver', async (req, res)=>{
+            const deliver = req.body;
+            const result = await deliveredCollection.insertOne(deliver);
+            res.send(result);
+        });
+
+        //pagination product count
+        app.get('/productcount', async(req, res)=>{
+            const query ={};
+            const cursor = stockCollection.find(query);
+            const count = await cursor.count();
+            res.send({count})
+        })
 
 
 
