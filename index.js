@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -26,13 +27,30 @@ async function run(){
         await client.connect();
         const stockCollection = client.db("stockManagement").collection("grocery");
         const deliveredCollection = client.db("stockManagement").collection("deliver");
+
+        //auth
+        app.post('/login', (req, res)=>{
+            const user = req.body;
+            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, {
+                expiresIn: '1d'
+            });
+            res.send({accessToken});
+        })
     
             // get data from server 
         app.get('/inventory', async (req, res)=>{
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
             const query = {};
             const cursor = stockCollection.find(query);
-            const stock = await cursor.toArray();
-            res.send(stock);
+            let stocks;
+            if(page || size){
+                stocks = await cursor.skip(page*size).limit(size).toArray();
+            } else{
+                stocks = await cursor.toArray();
+            }
+            
+            res.send(stocks);
         });
 
             // showing product by id 
@@ -92,6 +110,8 @@ async function run(){
             const count = await cursor.count();
             res.send({count})
         })
+
+     
 
 
 
