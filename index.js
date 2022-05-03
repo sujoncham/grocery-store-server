@@ -103,6 +103,14 @@ async function run(){
             res.send(result);
         });
 
+        //deliver detail with email and product info
+        app.get('/deliver', async (req, res)=>{
+            const query = {};
+            const cursor = deliveredCollection.find(query);
+            const delivers = await cursor.toArray();
+            res.send(delivers)
+        })
+
         //pagination product count
         app.get('/productcount', async(req, res)=>{
             const query ={};
