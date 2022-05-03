@@ -15,7 +15,23 @@ app.use(express.json());
 
 app.get('/', (req, res)=>{
     res.send("Grocery ware house running");
-})
+});
+
+function verifyJWT(req, res, next){
+    const authoHeader = req.headers.authorization;
+    if(!authoHeader){
+        return res.status(401).send({message: 'unauthorized access'});
+    }
+    const token = authoHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) =>{
+        if(err){
+            return res.status(403).send({message:'forbidden access'});
+        }
+        console.log('decoded', decoded);
+        req.decoded = decoded;
+        next();
+    })
+}
 
 
 
@@ -104,11 +120,17 @@ async function run(){
         });
 
         //deliver detail with email and product info
-        app.get('/deliver', async (req, res)=>{
-            const query = {};
-            const cursor = deliveredCollection.find(query);
-            const delivers = await cursor.toArray();
-            res.send(delivers)
+        app.get('/deliver', verifyJWT, async (req, res)=>{
+            const decodedEmail = req.decoded.email;
+            const email = req.query.email;
+            if(email === decodedEmail){
+                const query = {email:email};
+                const cursor = deliveredCollection.find(query);
+                const delivers = await cursor.toArray();
+                res.send(delivers)
+            } else{
+                res.status(403).send({message: 'forbidden access'})
+            }
         })
 
         //pagination product count
@@ -120,8 +142,6 @@ async function run(){
         })
 
      
-
-
 
     } 
     finally{
