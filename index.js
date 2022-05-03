@@ -52,6 +52,11 @@ async function run(){
             });
             res.send({accessToken});
         })
+
+        //heroku testing
+        app.get('/hero', (req, res)=>{
+            res.send("heroku sending data");
+        } )
     
             // get data from server 
         app.get('/inventory', async (req, res)=>{
