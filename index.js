@@ -43,6 +43,7 @@ async function run(){
         await client.connect();
         const stockCollection = client.db("stockManagement").collection("grocery");
         const deliveredCollection = client.db("stockManagement").collection("deliver");
+        const eamilCollection = client.db("stockManagement").collection("message");
 
         //auth
         app.post('/login', (req, res)=>{
@@ -145,6 +146,13 @@ async function run(){
             const count = await cursor.count();
             res.send({count})
         })
+
+        //email post 
+        app.post('/emailInfo', async (req, res)=>{
+            const newStock = req.body;
+            const result = await eamilCollection.insertOne(newStock);
+            res.send(result);
+        });
 
      
 
