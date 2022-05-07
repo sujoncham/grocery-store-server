@@ -43,7 +43,7 @@ async function run(){
         await client.connect();
         const stockCollection = client.db("stockManagement").collection("grocery");
         const deliveredCollection = client.db("stockManagement").collection("deliver");
-        const eamilCollection = client.db("stockManagement").collection("message");
+        const emailCollection = client.db("stockManagement").collection("message");
 
         //auth
         app.post('/login', (req, res)=>{
@@ -148,9 +148,9 @@ async function run(){
         })
 
         //email post 
-        app.post('/emailInfo', async (req, res)=>{
+        app.post('/message', async (req, res)=>{
             const newContact = req.body;
-            const result = await eamilCollection.insertOne(newContact);
+            const result = await emailCollection.insertOne(newContact);
             res.send(result);
         });
 
