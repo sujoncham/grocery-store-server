@@ -149,8 +149,8 @@ async function run(){
 
         //email post 
         app.post('/emailInfo', async (req, res)=>{
-            const newStock = req.body;
-            const result = await eamilCollection.insertOne(newStock);
+            const newContact = req.body;
+            const result = await eamilCollection.insertOne(newContact);
             res.send(result);
         });
 
