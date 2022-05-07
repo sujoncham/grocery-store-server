@@ -154,6 +154,13 @@ async function run(){
             res.send(result);
         });
 
+        app.get('/message', async(req, res)=>{
+            const query ={};
+            const cursor = emailCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
      
 
     } 
