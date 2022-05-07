@@ -153,13 +153,20 @@ async function run(){
             const result = await emailCollection.insertOne(newContact);
             res.send(result);
         });
-
+        // show message
         app.get('/message', async(req, res)=>{
             const query ={};
             const cursor = emailCollection.find(query);
             const result = await cursor.toArray();
             res.send(result);
         })
+        // message delete 
+        app.delete('/message/:id', async (req, res)=>{
+            const id = req.params.id;
+            const query = {_id:ObjectId(id)};
+            const result = await emailCollection.deleteOne(query);
+            res.send(result);
+        });
 
      
 
