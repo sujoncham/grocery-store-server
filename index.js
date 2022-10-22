@@ -57,7 +57,7 @@ async function run(){
         //heroku testing
         app.get('/hero', (req, res)=>{
             res.send("heroku sending data");
-        } )
+        })
     
             // get data from server 
         app.get('/inventory', async (req, res)=>{
@@ -85,8 +85,8 @@ async function run(){
 
         // stock post 
         app.post('/inventory', async (req, res)=>{
-            const newStock = req.body;
-            const result = await stockCollection.insertOne(newStock);
+            const newProduct = req.body;
+            const result = await stockCollection.insertOne(newProduct);
             res.send(result);
         });
 
@@ -126,7 +126,7 @@ async function run(){
         });
 
         //deliver detail with email and product info
-        app.get('/deliver', verifyJWT, async (req, res)=>{
+        app.get('/deliver', async (req, res)=>{
             const decodedEmail = req.decoded.email;
             const email = req.query.email;
             if(email === decodedEmail){
